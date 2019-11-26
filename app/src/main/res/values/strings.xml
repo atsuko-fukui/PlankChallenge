@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">PlankChallenge</string>
+    <string name="nav_record">Record</string>
+    <string name="nav_exercise">Exercise</string>
+</resources>
