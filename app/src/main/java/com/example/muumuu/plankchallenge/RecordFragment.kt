@@ -45,7 +45,10 @@ class RecordFragment : Fragment() {
     private fun updateRecordList(records: List<Record>) {
         recyclerView.withModels {
             records.forEachIndexed { index, record ->
-//                RecordViewModel_()
+                RecordItemViewModel_()
+                    .id(index)
+                    .recordDate(record.date)
+                    .addTo(this)
             }
         }
     }

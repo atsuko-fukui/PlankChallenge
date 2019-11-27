@@ -23,7 +23,7 @@ class RecordItemView : ConstraintLayout {
         get() = findViewById(R.id.record_date)
 
     @ModelProp
-    fun setRecordDate(date: String) {
+    fun setRecordDate(date: Long) {
         val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
         recordDate.text = dateFormat.format(Date(date))
     }

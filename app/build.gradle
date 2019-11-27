@@ -7,7 +7,6 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 kapt {
-    generateStubs = true
     correctErrorTypes = true
 }
 
@@ -41,13 +40,12 @@ dependencies {
 
     def room_version = "2.2.2"
     implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version" // For Kotlin use kapt instead of annotationProcessor
     implementation "androidx.room:room-ktx:$room_version"
     kapt "android.arch.persistence.room:compiler:1.1.1"
 
     def epoxy_version = "3.8.0"
     implementation "com.airbnb.android:epoxy:$epoxy_version"
-    annotationProcessor "com.airbnb.android:epoxy-processor:$epoxy_version"
+    kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

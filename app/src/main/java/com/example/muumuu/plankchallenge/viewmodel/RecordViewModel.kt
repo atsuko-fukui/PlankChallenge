@@ -22,7 +22,7 @@ class RecordViewModel() {
         val dao = AppDatabase.getInstance(context).recordDao()
         return Completable.fromAction {
             val existingRecordCount = dao.getAll().size
-            dao.insert(Record(existingRecordCount + 1, System.currentTimeMillis().toString()))
+            dao.insert(Record(existingRecordCount + 1, System.currentTimeMillis()))
         }
     }
 

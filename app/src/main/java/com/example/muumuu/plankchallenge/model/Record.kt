@@ -7,5 +7,5 @@ import androidx.room.PrimaryKey
 @Entity
 data class Record(
     @PrimaryKey val id: Int,
-    @ColumnInfo(name = "date") val date: String
+    @ColumnInfo(name = "date") val date: Long
 )
