@@ -4,17 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.muumuu.plankchallenge.viewmodel.RecordViewModel
 import com.kizitonwose.calendarview.CalendarView
 import com.kizitonwose.calendarview.model.CalendarDay
+import com.kizitonwose.calendarview.model.CalendarMonth
 import com.kizitonwose.calendarview.ui.DayBinder
+import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder
+import com.kizitonwose.calendarview.ui.ViewContainer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
+import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.temporal.WeekFields
 import java.text.SimpleDateFormat
 import java.util.*
@@ -27,7 +32,8 @@ class RecordFragment : Fragment() {
     private val viewModel = RecordViewModel()
     private val disposable = CompositeDisposable()
     private var recordList = emptyList<LocalDate>()
-    private val format = SimpleDateFormat("yyyy-MM-dd")
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+    private val titleFormatter = DateTimeFormatter.ofPattern("yyyy MM")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,6 +58,12 @@ class RecordFragment : Fragment() {
                 container.circle.isVisible = isRecorded
             }
         }
+        calendarView.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthViewContainer> {
+            override fun create(view: View) = MonthViewContainer(view)
+            override fun bind(container: MonthViewContainer, month: CalendarMonth) {
+                container.textView.text = titleFormatter.format(month.yearMonth)
+            }
+        }
     }
 
     override fun onResume() {
@@ -68,7 +80,7 @@ class RecordFragment : Fragment() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     this.recordList = it.map {
-                        LocalDate.parse(format.format(it.date))
+                        LocalDate.parse(dateFormat.format(it.date))
                     }
 
                     calendarView.notifyCalendarChanged()
@@ -88,5 +100,9 @@ class RecordFragment : Fragment() {
         val firstDayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek
         calendarView.setup(firstMonth, lastMonth, firstDayOfWeek)
         calendarView.scrollToMonth(currentMonth)
+    }
+
+    class MonthViewContainer(view: View) : ViewContainer(view) {
+        val textView = view.findViewById<TextView>(R.id.monthText)
     }
 }
