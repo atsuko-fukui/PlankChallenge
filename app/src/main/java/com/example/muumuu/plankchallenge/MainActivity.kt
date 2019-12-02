@@ -2,6 +2,8 @@ package com.example.muumuu.plankchallenge
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.navigation.findNavController
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -13,24 +15,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        showFragment(R.id.nav_record)
-        bottomNavigationView.setOnNavigationItemSelectedListener {
-            showFragment(it.itemId)
-            true
-        }
+        bottomNavigationView.setupWithNavController(findNavController(R.id.nav_fragment))
     }
-
-    private fun showFragment(itemId: Int) {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_container, getFragment(itemId), itemId.toString())
-            .commitAllowingStateLoss()
-    }
-
-    private fun getFragment(itemId: Int) =
-        supportFragmentManager.findFragmentByTag(itemId.toString()) ?: when (itemId) {
-            R.id.nav_record -> RecordFragment()
-            R.id.nav_exercise -> ExerciseFragment()
-            else -> throw Throwable(IllegalArgumentException())
-        }
 }
