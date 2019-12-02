@@ -43,6 +43,7 @@ class ExerciseFragment : Fragment() {
         start.setOnClickListener {
             startTimer()
         }
+        timer.text = EXERCISE_DURATION_IN_SECOND.toString()
     }
 
     private fun startTimer() {
