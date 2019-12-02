@@ -7,5 +7,6 @@ import com.kizitonwose.calendarview.ui.ViewContainer
 
 class DayViewContainer(view: View) : ViewContainer(view) {
     val textView: TextView = view.findViewById(R.id.calendarDayText)
-    val circle: ImageView = view.findViewById(R.id.circle)
+    val circleRecorded: ImageView = view.findViewById(R.id.circle_recorded)
+    val circleToday: ImageView = view.findViewById(R.id.circle_today)
 }

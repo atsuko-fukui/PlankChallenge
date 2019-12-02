@@ -1,5 +1,6 @@
 package com.example.muumuu.plankchallenge
 
+import android.icu.util.LocaleData
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -51,11 +52,14 @@ class RecordFragment : Fragment() {
             override fun bind(container: DayViewContainer, day: CalendarDay) {
                 container.textView.text = day.date.dayOfMonth.toString()
 
+                val isToday = day.date == LocalDate.now()
+                container.circleToday.isVisible = isToday
+
                 val isRecorded = recordList
                     .firstOrNull {
                         it == day.date
                     } != null
-                container.circle.isVisible = isRecorded
+                container.circleRecorded.isVisible = isRecorded
             }
         }
         calendarView.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthViewContainer> {
