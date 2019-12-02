@@ -1,17 +1,20 @@
 package com.example.muumuu.plankchallenge
 
+import android.graphics.Color
 import android.icu.util.LocaleData
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.muumuu.plankchallenge.viewmodel.RecordViewModel
 import com.kizitonwose.calendarview.CalendarView
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
+import com.kizitonwose.calendarview.model.DayOwner
 import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
@@ -60,6 +63,20 @@ class RecordFragment : Fragment() {
                         it == day.date
                     } != null
                 container.circleRecorded.isVisible = isRecorded
+
+                container.textView.text = day.date.dayOfMonth.toString()
+                context?.let {
+                    container.textView.setTextColor(
+                        ContextCompat.getColor(
+                            it,
+                            if (day.owner == DayOwner.THIS_MONTH) {
+                                android.R.color.black
+                            } else {
+                                R.color.grey
+                            }
+                        )
+                    )
+                }
             }
         }
         calendarView.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthViewContainer> {
