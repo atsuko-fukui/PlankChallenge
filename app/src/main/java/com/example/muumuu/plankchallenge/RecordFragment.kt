@@ -1,7 +1,5 @@
 package com.example.muumuu.plankchallenge
 
-import android.graphics.Color
-import android.icu.util.LocaleData
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
