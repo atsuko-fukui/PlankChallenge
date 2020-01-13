@@ -62,7 +62,7 @@ class EditTimerDialogFragment : DialogFragment() {
         listener = null
     }
 
-    fun setListner(listener: (Long) -> Unit) {
+    fun setListener(listener: (Long) -> Unit) {
         this.listener = listener
     }
 }

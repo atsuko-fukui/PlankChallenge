@@ -1,31 +1,21 @@
 package com.example.muumuu.plankchallenge.viewmodel
 
 import android.content.Context
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.muumuu.plankchallenge.model.AppDatabase
 import com.example.muumuu.plankchallenge.model.Record
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.processors.BehaviorProcessor
+import kotlinx.coroutines.launch
 
-class RecordViewModel() {
+class RecordViewModel: ViewModel() {
 
-    private val records = BehaviorProcessor.create<List<Record>>()
+    val recordList = MutableLiveData<List<Record>>(emptyList())
 
-    fun fetchAllRecord(context: Context): Completable{
-        val dao = AppDatabase.getInstance(context).recordDao()
-        return Completable.fromAction {
-            records.onNext(dao.getAll())
+    fun fetchAllRecord(context: Context) {
+        viewModelScope.launch {
+            val dao = AppDatabase.getInstance(context).recordDao()
+            recordList.postValue(dao.getAll())
         }
     }
-
-    fun saveRecord(context: Context): Completable {
-        val dao = AppDatabase.getInstance(context).recordDao()
-        return Completable.fromAction {
-            val existingRecordCount = dao.getAll().size
-            dao.insert(Record(existingRecordCount + 1, System.currentTimeMillis()))
-        }
-    }
-
-
-    fun observeAllRecord(): Flowable<List<Record>> = records.hide()
 }

@@ -8,6 +8,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.observe
 import com.example.muumuu.plankchallenge.viewmodel.RecordViewModel
 import com.kizitonwose.calendarview.CalendarView
 import com.kizitonwose.calendarview.model.CalendarDay
@@ -16,9 +18,6 @@ import com.kizitonwose.calendarview.model.DayOwner
 import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 import org.threeten.bp.format.DateTimeFormatter
@@ -31,8 +30,6 @@ class RecordFragment : Fragment() {
     private val calendarView: CalendarView
         get() = view!!.findViewById(R.id.calendarView)
 
-    private val viewModel = RecordViewModel()
-    private val disposable = CompositeDisposable()
     private var recordList = emptyList<LocalDate>()
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd")
     private val titleFormatter = DateTimeFormatter.ofPattern("yyyy MM")
@@ -90,26 +87,14 @@ class RecordFragment : Fragment() {
         setupCalendar()
 
         val context = context ?: return
-        disposable.addAll(
-            viewModel.fetchAllRecord(context)
-                .subscribeOn(Schedulers.io())
-                .subscribe(),
-
-            viewModel.observeAllRecord()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    this.recordList = it.map {
-                        LocalDate.parse(dateFormat.format(it.date))
-                    }
-
-                    calendarView.notifyCalendarChanged()
+        val viewModel = ViewModelProviders.of(this)[RecordViewModel::class.java]
+        viewModel.fetchAllRecord(context)
+            viewModel.recordList.observe(this) { list ->
+                this.recordList = list.map {
+                    LocalDate.parse(dateFormat.format(it.date))
                 }
-        )
-    }
-
-    override fun onPause() {
-        super.onPause()
-        disposable.clear()
+                calendarView.notifyCalendarChanged()
+            }
     }
 
     private fun setupCalendar() {
@@ -122,6 +107,6 @@ class RecordFragment : Fragment() {
     }
 
     class MonthViewContainer(view: View) : ViewContainer(view) {
-        val textView = view.findViewById<TextView>(R.id.monthText)
+        val textView: TextView = view.findViewById(R.id.monthText)
     }
 }
