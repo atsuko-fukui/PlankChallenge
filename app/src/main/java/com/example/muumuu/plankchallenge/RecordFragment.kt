@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
 import com.example.muumuu.plankchallenge.viewmodel.RecordViewModel
 import com.kizitonwose.calendarview.CalendarView
@@ -86,7 +87,7 @@ class RecordFragment : Fragment() {
         setupCalendar()
 
         val context = context ?: return
-        val viewModel = RecordViewModel()
+        val viewModel = ViewModelProviders.of(this)[RecordViewModel::class.java]
         viewModel.fetchAllRecord(context)
             viewModel.recordList.observe(this) { list ->
                 this.recordList = list.map {
