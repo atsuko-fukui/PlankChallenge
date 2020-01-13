@@ -7,8 +7,8 @@ import androidx.room.Query
 @Dao
 interface RecordDao {
     @Query("SELECT * from record")
-    fun getAll(): List<Record>
+    suspend fun getAll(): List<Record>
 
     @Insert
-    fun insert(record: Record)
+    suspend fun insert(record: Record)
 }

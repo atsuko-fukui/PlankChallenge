@@ -7,19 +7,15 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.observe
 import androidx.preference.PreferenceManager
-import com.example.muumuu.plankchallenge.viewmodel.RecordViewModel
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
+import com.example.muumuu.plankchallenge.viewmodel.ExerciseViewModel
 
 class ExerciseFragment : Fragment() {
 
     companion object {
-        private const val EXERCISE_DURATION_IN_SECOND = 30L
+        const val EXERCISE_DURATION_IN_SECOND = 30L
         const val KEY_TIMER_DURATION = "key_timer_duration"
         const val TAG_EDIT_TIMER_DIALOG = "tag_edit_timer_dialog"
     }
@@ -29,10 +25,6 @@ class ExerciseFragment : Fragment() {
 
     private val start: Button
         get() = view!!.findViewById(R.id.start)
-
-    private val viewModel = RecordViewModel()
-
-    private val disposable = CompositeDisposable()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,10 +37,16 @@ class ExerciseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val timerDuration = getTimerDuration()
-        start.setOnClickListener {
-            startTimer(timerDuration)
+        val viewModel =
+            ViewModelProviders.of(this)[ExerciseViewModel::class.java]
+        val context = context ?: return
+        viewModel.initTimer(context)
+        viewModel.timer.observe(this) { value ->
+            timer.text = value.toString()
         }
-        timer.text = timerDuration.toString()
+        start.setOnClickListener {
+            viewModel.startTimer(timerDuration, context)
+        }
         timer.setOnClickListener {
             showTimerEditDialog(timerDuration)
         }
@@ -63,41 +61,11 @@ class ExerciseFragment : Fragment() {
             EditTimerDialogFragment
                 .createInstance(duration)
                 .apply {
-                    setListner {
-                        timer.text = it.toString()
+                    setListener { duration ->
+                        timer.text = duration.toString()
                     }
                 }
                 .show(it, TAG_EDIT_TIMER_DIALOG)
         }
-    }
-
-    private fun startTimer(duration: Long) {
-        disposable.add(
-            Observable.interval(1, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .take(duration)
-                .doOnNext {
-                    timer.text = (duration - it - 1).toInt().toString()
-                }
-                .subscribeOn(Schedulers.io())
-                .doOnComplete {
-                    saveRecord()
-                }
-                .subscribe()
-        )
-    }
-
-    private fun saveRecord() {
-        val context = context ?: return
-        disposable.add(
-            viewModel.saveRecord(context)
-                .subscribeOn(Schedulers.io())
-                .subscribe()
-        )
-    }
-
-    override fun onPause() {
-        super.onPause()
-        disposable.clear()
     }
 }
