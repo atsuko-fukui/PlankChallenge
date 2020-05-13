@@ -4,7 +4,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity() {
+interface Host {
+    fun showRecordScreen()
+}
+class MainActivity : AppCompatActivity(), Host {
 
     private val bottomNavigationView: BottomNavigationView
         get() = findViewById(R.id.bottom_navigation)
@@ -33,4 +36,8 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_exercise -> ExerciseFragment()
             else -> throw Throwable(IllegalArgumentException())
         }
+
+    override fun showRecordScreen() {
+        showFragment(R.id.nav_record)
+    }
 }

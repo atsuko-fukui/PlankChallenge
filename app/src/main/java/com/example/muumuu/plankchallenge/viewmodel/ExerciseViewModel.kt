@@ -13,17 +13,17 @@ import kotlinx.coroutines.launch
 
 class ExerciseViewModel : ViewModel() {
 
-    val timer = MutableLiveData<Long>(0)
+    val timer = MutableLiveData<Long>()
 
     fun initTimer(context: Context) {
-        timer.postValue(getTimerDuration(context))
+        timer.postValue(getTimerDuration(context) * 100)
     }
 
     fun startTimer(duration: Long, context: Context) {
         viewModelScope.launch {
-            for (i in 1..duration) {
-                delay(1_000)
-                timer.postValue(duration - i)
+            for (i in 1..duration * 100) {
+                delay(10)
+                timer.postValue((duration * 100) - i)
             }
 
             val dao = AppDatabase.getInstance(context).recordDao()
