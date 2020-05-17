@@ -4,13 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
 import androidx.preference.PreferenceManager
+import com.example.muumuu.plankchallenge.databinding.FragmentExerciseBinding
 import com.example.muumuu.plankchallenge.viewmodel.ExerciseViewModel
 
 class ExerciseFragment : Fragment() {
@@ -21,21 +19,17 @@ class ExerciseFragment : Fragment() {
         const val TAG_EDIT_TIMER_DIALOG = "tag_edit_timer_dialog"
     }
 
-    private val motionLayout: MotionLayout
-        get() = view!!.findViewById(R.id.motion_base)
-
-    private val timer: TextView
-        get() = view!!.findViewById(R.id.timer)
-
-    private val start: Button
-        get() = view!!.findViewById(R.id.start)
+    private var _binding: FragmentExerciseBinding? = null
+    private val binding
+        get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_exercise, null)
+        _binding = FragmentExerciseBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,18 +40,18 @@ class ExerciseFragment : Fragment() {
         val context = context ?: return
         viewModel.initTimer(context)
         viewModel.timer.observe(this) { value ->
-            timer.text = (value / 100).toInt().toString()
+            binding.timer.text = (value / 100).toInt().toString()
             val timerDuration0dot01sec = timerDuration * 100
-            motionLayout.progress =
+            binding.motionBase.progress =
                 ((timerDuration0dot01sec - value.toDouble()) / timerDuration0dot01sec).toFloat()
             if (value == 0L) {
                 (activity as Host).showRecordScreen()
             }
         }
-        start.setOnClickListener {
+        binding.start.setOnClickListener {
             viewModel.startTimer(timerDuration, context)
         }
-        timer.setOnClickListener {
+        binding.timer.setOnClickListener {
             showTimerEditDialog(timerDuration)
         }
     }
@@ -72,7 +66,7 @@ class ExerciseFragment : Fragment() {
                 .createInstance(duration)
                 .apply {
                     setListener { duration ->
-                        timer.text = duration.toString()
+                        binding.timer.text = duration.toString()
                     }
                 }
                 .show(it, TAG_EDIT_TIMER_DIALOG)

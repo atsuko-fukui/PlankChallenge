@@ -10,8 +10,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
+import com.example.muumuu.plankchallenge.databinding.FragmentRecordBinding
 import com.example.muumuu.plankchallenge.viewmodel.RecordViewModel
-import com.kizitonwose.calendarview.CalendarView
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
 import com.kizitonwose.calendarview.model.DayOwner
@@ -27,8 +27,9 @@ import java.util.*
 
 class RecordFragment : Fragment() {
 
-    private val calendarView: CalendarView
-        get() = view!!.findViewById(R.id.calendarView)
+    private var _binding: FragmentRecordBinding? = null
+    private val binding
+        get() = _binding!!
 
     private var recordList = emptyList<LocalDate>()
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd")
@@ -39,12 +40,13 @@ class RecordFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_record, null)
+        _binding = FragmentRecordBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        calendarView.dayBinder = object : DayBinder<DayViewContainer> {
+        binding.calendarView.dayBinder = object : DayBinder<DayViewContainer> {
             override fun create(view: View) = DayViewContainer(view)
 
             override fun bind(container: DayViewContainer, day: CalendarDay) {
@@ -74,7 +76,7 @@ class RecordFragment : Fragment() {
                 }
             }
         }
-        calendarView.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthViewContainer> {
+        binding.calendarView.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthViewContainer> {
             override fun create(view: View) = MonthViewContainer(view)
             override fun bind(container: MonthViewContainer, month: CalendarMonth) {
                 container.textView.text = titleFormatter.format(month.yearMonth)
@@ -93,7 +95,7 @@ class RecordFragment : Fragment() {
                 this.recordList = list.map {
                     LocalDate.parse(dateFormat.format(it.date))
                 }
-                calendarView.notifyCalendarChanged()
+                binding.calendarView.notifyCalendarChanged()
             }
     }
 
@@ -102,8 +104,8 @@ class RecordFragment : Fragment() {
         val firstMonth = currentMonth.minusMonths(10)
         val lastMonth = currentMonth.plusMonths(10)
         val firstDayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek
-        calendarView.setup(firstMonth, lastMonth, firstDayOfWeek)
-        calendarView.scrollToMonth(currentMonth)
+        binding.calendarView.setup(firstMonth, lastMonth, firstDayOfWeek)
+        binding.calendarView.scrollToMonth(currentMonth)
     }
 
     class MonthViewContainer(view: View) : ViewContainer(view) {
