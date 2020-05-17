@@ -108,6 +108,11 @@ class RecordFragment : Fragment() {
         binding.calendarView.scrollToMonth(currentMonth)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     class MonthViewContainer(view: View) : ViewContainer(view) {
         val textView: TextView = view.findViewById(R.id.monthText)
     }

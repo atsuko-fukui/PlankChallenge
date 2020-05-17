@@ -56,6 +56,11 @@ class ExerciseFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun getTimerDuration() =
         PreferenceManager.getDefaultSharedPreferences(context)
             .getLong(KEY_TIMER_DURATION, EXERCISE_DURATION_IN_SECOND)
