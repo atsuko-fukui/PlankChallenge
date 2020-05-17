@@ -4,12 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.TextView
 import androidx.core.content.edit
 import androidx.fragment.app.DialogFragment
 import androidx.preference.PreferenceManager
 import com.example.muumuu.plankchallenge.ExerciseFragment.Companion.KEY_TIMER_DURATION
+import com.example.muumuu.plankchallenge.databinding.FragmentEditTimerDialogBinding
 
 class EditTimerDialogFragment : DialogFragment() {
 
@@ -22,11 +21,9 @@ class EditTimerDialogFragment : DialogFragment() {
         }
     }
 
-    private val editText: EditText
-        get() = view!!.findViewById(R.id.edit_text)
-
-    private val doneButton: TextView
-        get() = view!!.findViewById(R.id.done)
+    private var _binding: FragmentEditTimerDialogBinding? = null
+    private val binding
+        get() = _binding!!
 
     private var listener: ((Long) -> Unit)? = null
 
@@ -34,15 +31,18 @@ class EditTimerDialogFragment : DialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_edit_timer_dialog, container, false)
+    ): View? {
+        _binding = FragmentEditTimerDialogBinding.inflate(inflater, container, false)
+        return  binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.getLong(KEY_DURATION)?.let {
-            editText.setText(it.toString())
+            binding.editText.setText(it.toString())
         }
 
-        doneButton.setOnClickListener {
+        binding.done.setOnClickListener {
             saveTimerDuration()
             this.dismiss()
         }
@@ -50,7 +50,7 @@ class EditTimerDialogFragment : DialogFragment() {
 
     private fun saveTimerDuration() {
         val context = context ?: return
-        val duration = editText.text.toString().toLongOrNull() ?: return
+        val duration = binding.editText.text.toString().toLongOrNull() ?: return
         PreferenceManager.getDefaultSharedPreferences(context).edit {
             putLong(KEY_TIMER_DURATION, duration)
         }
@@ -60,6 +60,7 @@ class EditTimerDialogFragment : DialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         listener = null
+        _binding = null
     }
 
     fun setListener(listener: (Long) -> Unit) {

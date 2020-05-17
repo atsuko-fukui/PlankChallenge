@@ -2,22 +2,22 @@ package com.example.muumuu.plankchallenge
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.muumuu.plankchallenge.databinding.ActivityMainBinding
 
 interface Host {
     fun showRecordScreen()
 }
 class MainActivity : AppCompatActivity(), Host {
 
-    private val bottomNavigationView: BottomNavigationView
-        get() = findViewById(R.id.bottom_navigation)
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         showFragment(R.id.nav_record)
-        bottomNavigationView.setOnNavigationItemSelectedListener {
+        binding.bottomNavigation.setOnNavigationItemSelectedListener {
             showFragment(it.itemId)
             true
         }
