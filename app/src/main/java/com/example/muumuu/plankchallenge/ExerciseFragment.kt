@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
 import androidx.preference.PreferenceManager
 import com.example.muumuu.plankchallenge.databinding.FragmentExerciseBinding
+import com.example.muumuu.plankchallenge.util.EventObserver
 import com.example.muumuu.plankchallenge.viewmodel.ExerciseViewModel
 
 class ExerciseFragment : Fragment() {
@@ -44,10 +45,10 @@ class ExerciseFragment : Fragment() {
             val timerDuration0dot01sec = timerDuration * 100
             binding.motionBase.progress =
                 ((timerDuration0dot01sec - value.toDouble()) / timerDuration0dot01sec).toFloat()
-            if (value == 0L) {
-                (activity as Host).showRecordScreen()
-            }
         }
+        viewModel.onCompleteSavingRecord.observe(this, EventObserver {
+            (activity as Host).showRecordScreen()
+        })
         binding.start.setOnClickListener {
             viewModel.startTimer(timerDuration, context)
         }

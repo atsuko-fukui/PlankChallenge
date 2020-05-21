@@ -8,12 +8,14 @@ import androidx.preference.PreferenceManager
 import com.example.muumuu.plankchallenge.ExerciseFragment
 import com.example.muumuu.plankchallenge.model.AppDatabase
 import com.example.muumuu.plankchallenge.model.Record
+import com.example.muumuu.plankchallenge.util.Event
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ExerciseViewModel : ViewModel() {
 
     val timer = MutableLiveData<Long>()
+    val onCompleteSavingRecord = MutableLiveData<Event<Boolean>>()
 
     fun initTimer(context: Context) {
         timer.postValue(getTimerDuration(context) * 100)
@@ -29,6 +31,7 @@ class ExerciseViewModel : ViewModel() {
             val dao = AppDatabase.getInstance(context).recordDao()
             val existingRecordCount = dao.getAll().size
             dao.insert(Record(existingRecordCount + 1, System.currentTimeMillis()))
+            onCompleteSavingRecord.postValue(Event(true))
         }
     }
 
