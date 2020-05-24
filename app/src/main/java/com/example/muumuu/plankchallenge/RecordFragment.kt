@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
 import com.example.muumuu.plankchallenge.databinding.FragmentRecordBinding
+import com.example.muumuu.plankchallenge.model.AppDatabase
 import com.example.muumuu.plankchallenge.viewmodel.RecordViewModel
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
@@ -89,14 +90,17 @@ class RecordFragment : Fragment() {
         setupCalendar()
 
         val context = context ?: return
-        val viewModel = ViewModelProviders.of(this)[RecordViewModel::class.java]
-        viewModel.fetchAllRecord(context)
-            viewModel.recordList.observe(this) { list ->
-                this.recordList = list.map {
-                    LocalDate.parse(dateFormat.format(it.date))
-                }
-                binding.calendarView.notifyCalendarChanged()
+        val viewModel = ViewModelProviders.of(
+            this,
+            RecordViewModel.FACTORY(AppDatabase.getInstance(context).recordDao())
+        )[RecordViewModel::class.java]
+        viewModel.fetchAllRecord()
+        viewModel.recordList.observe(this) { list ->
+            this.recordList = list.map {
+                LocalDate.parse(dateFormat.format(it.date))
             }
+            binding.calendarView.notifyCalendarChanged()
+        }
     }
 
     private fun setupCalendar() {
