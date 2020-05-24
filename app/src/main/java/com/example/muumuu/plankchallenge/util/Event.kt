@@ -13,9 +13,9 @@ class Event<out T>(private val content: T) {
             hasBeenHandled = true
             content
         }
-
-        fun peekContent(): T = content
     }
+
+    fun peekContent(): T = content
 }
 
 class EventObserver<T>(private val onEventUnhandledContent: (T) -> Unit) : Observer<Event<T>> {

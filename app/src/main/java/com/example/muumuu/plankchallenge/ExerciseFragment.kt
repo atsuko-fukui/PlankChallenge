@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
 import androidx.preference.PreferenceManager
 import com.example.muumuu.plankchallenge.databinding.FragmentExerciseBinding
+import com.example.muumuu.plankchallenge.model.AppDatabase
 import com.example.muumuu.plankchallenge.util.EventObserver
 import com.example.muumuu.plankchallenge.viewmodel.ExerciseViewModel
 
@@ -35,11 +36,12 @@ class ExerciseFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val timerDuration = getTimerDuration()
-        val viewModel =
-            ViewModelProviders.of(this)[ExerciseViewModel::class.java]
         val context = context ?: return
-        viewModel.initTimer(context)
+        val timerDuration = getTimerDuration()
+        val viewModel = ViewModelProviders.of(
+            this, ExerciseViewModel.FACTORY(AppDatabase.getInstance(context).recordDao())
+        )[ExerciseViewModel::class.java]
+        viewModel.initTimer(PreferenceManager.getDefaultSharedPreferences(context))
         viewModel.timer.observe(this) { value ->
             binding.timer.text = (value / 100).toInt().toString()
             val timerDuration0dot01sec = timerDuration * 100
@@ -50,7 +52,7 @@ class ExerciseFragment : Fragment() {
             (activity as Host).showRecordScreen()
         })
         binding.start.setOnClickListener {
-            viewModel.startTimer(timerDuration, context)
+            viewModel.startTimer(timerDuration, System.currentTimeMillis())
         }
         binding.timer.setOnClickListener {
             showTimerEditDialog(timerDuration)
